@@ -1,1 +1,11 @@
+# IDE project files
+.idea
+.vscode
+
+# Python cached files
+.eggs
+*.egg-info
+__pycache__
+
+# Sphinx output
 _build
