@@ -89,6 +89,7 @@ pages:
     expire_in: 100 years
   # Only run for stable version tags (e.g. v1.2.3)
   only:
+    - master
     - /^v\d+(\.\d+)*$/
   except:
     - branches
