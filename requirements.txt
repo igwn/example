@@ -1,0 +1,1 @@
+git+https://git.ligo.org/docs/sphinx-igwn  # FIXME: should be uploaded to PyPI
