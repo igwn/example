@@ -59,7 +59,7 @@ latexpdf:
     expose_as: pdf
     expire_in: 2 weeks  # P&P circulation period
     paths:
-      - latex/*.pdf
+      - latex/SphinxIGWNExample.pdf
 
 linkcheck:
   <<: *sphinx
