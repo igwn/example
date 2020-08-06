@@ -1,0 +1,97 @@
+stages:
+  - build
+  - deploy
+
+image: python
+
+cache:
+  key: shared
+  paths:
+    - .cache
+variables:
+  PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
+.before-apt: &before-apt
+  - mkdir -p .config .cache/apt
+  - export APT_CONFIG="$CI_PROJECT_DIR/.config/apt.conf"
+  - echo Dir::Cache \"$CI_PROJECT_DIR/.cache/apt\"; >> $APT_CONFIG
+  - echo Dir::State \"$CI_PROJECT_DIR/.cache/apt\"; >> $APT_CONFIG
+
+.sphinx: &sphinx
+  stage: build
+  variables:
+    SPHINXOPTS: -W
+  script:
+    - pip install -r requirements.txt
+    - sphinx-build -M $CI_JOB_NAME . .
+
+html:
+  <<: *sphinx
+  artifacts:
+    expose_as: html
+    expire_in: 2 weeks  # P&P circulation period
+    paths:
+      - html/index.html
+      - html
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    url: $CI_JOB_URL/artifacts/file/html/index.html
+    on_stop: stop review
+    auto_stop_in: 2 weeks
+
+stop review:
+  stage: build
+  when: manual
+  environment:
+    action: stop
+    name: review/$CI_COMMIT_REF_SLUG
+  script: ["true"]  # no-op
+
+doctest:
+  <<: *sphinx
+
+latexpdf:
+  <<: *sphinx
+  before_script:
+    - *before-apt
+    - apt-get update
+    - apt-get -y install --no-install-recommends latexmk texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra
+  artifacts:
+    expose_as: pdf
+    expire_in: 2 weeks  # P&P circulation period
+    paths:
+      - latex/*.pdf
+
+linkcheck:
+  <<: *sphinx
+  allow_failure: true
+
+spelling:
+  <<: *sphinx
+  before_script:
+    - *before-apt
+    - apt-get update
+    - apt-get -y install enchant
+    - pip install sphinxcontrib-spelling
+  script:
+    - pip install -r requirements.txt
+    - sphinx-build -M $CI_JOB_NAME . .
+    # Fail and show output if there were spelling errors.
+    - if test -s $CI_JOB_NAME/output.txt; then cat $CI_JOB_NAME/output.txt; false; fi
+
+pages:
+  stage: deploy
+  script:
+    - mv html public/
+    - mv latex/*.pdf public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 100 years
+  # Only run for stable version tags (e.g. v1.2.3)
+  only:
+    - /^v\d+(\.\d+)*$/
+  except:
+    - branches
+  dependencies:
+    - html
+    - latexpdf
