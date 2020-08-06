@@ -1,5 +1,5 @@
-Example
-=======
+Sphinx IGWN Example
+===================
 
 This is a Sphinx documentation project. To build this documentation locally,
 first make sure that you have Python 3.6 or later installed. Then, install

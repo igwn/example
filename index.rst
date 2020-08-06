@@ -1,7 +1,7 @@
-Example
-=======
+Sphinx IGWN Example
+===================
 
-Welcome to the Example documentation!
+Welcome to the Sphinx IGWN Example documentation!
 
 .. toctree::
    :maxdepth: 2

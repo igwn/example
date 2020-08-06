@@ -6,7 +6,7 @@ from sphinx_igwn.conf import *
 
 # -- Project information -----------------------------------------------------
 
-project = "Example"
+project = "Sphinx IGWN Example"
 # author = 'LIGO Scientific Collaboration, Virgo Collaboration, KAGRA Collaboration'
 # copyright = '2020, LIGO Scientific Collaboration, Virgo Collaboration, KAGRA Collaboration'
 
